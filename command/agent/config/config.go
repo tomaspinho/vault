@@ -29,6 +29,7 @@ type Config struct {
 
 type Vault struct {
 	Address          string      `hcl:"address"`
+	Namespace        string      `hcl:"namespace"`
 	CACert           string      `hcl:"ca_cert"`
 	CAPath           string      `hcl:"ca_path"`
 	TLSSkipVerify    bool        `hcl:"-"`

@@ -71,6 +71,9 @@ const (
 	// flagNameAddress is the flag used in the base command to read in the
 	// address of the Vault server.
 	flagNameAddress = "address"
+	// flagNameNamespace is the flag used in the base command to read in the
+	// namespace name.
+	flagNameNamespace = "namespace"
 	// flagnameCACert is the flag used in the base command to read in the CA
 	// cert.
 	flagNameCACert = "ca-cert"

@@ -219,6 +219,12 @@ func (c *AgentCommand) Run(args []string) int {
 			Default: "https://127.0.0.1:8200",
 			EnvVar:  api.EnvVaultAddress,
 		})
+		c.setStringFlag(f, config.Vault.Namespace, &StringVar{
+			Name:    flagNameNamespace,
+			Target:  &c.flagNamespace,
+			Default: "",
+			EnvVar:  api.EnvVaultNamespace,
+		})
 		c.setStringFlag(f, config.Vault.CACert, &StringVar{
 			Name:    flagNameCACert,
 			Target:  &c.flagCACert,
