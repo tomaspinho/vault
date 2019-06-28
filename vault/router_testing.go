@@ -113,3 +113,13 @@ func (n *NoopBackend) Type() logical.BackendType {
 	}
 	return n.BackendType
 }
+
+type initableBackend struct {
+	NoopBackend
+	inited bool
+}
+
+func (b *initableBackend) Initialize(context.Context, *logical.InitializationRequest) error {
+	b.inited = true
+	return nil
+}

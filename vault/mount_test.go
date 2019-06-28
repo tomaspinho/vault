@@ -736,25 +736,11 @@ func TestSingletonMountTableFunc(t *testing.T) {
 	}
 }
 
-type initableBackend struct {
-	NoopBackend
-	inited bool
-}
+func TestCore_SetupMounts_Initialize(t *testing.T) {
 
-func (b *initableBackend) Initialize(context.Context, *logical.InitializationRequest) error {
-	b.inited = true
-	return nil
-}
-
-func TestInitializeBackend(t *testing.T) {
+	c, _, _ := TestCoreUnsealed(t)
 
 	b := &initableBackend{}
-	if b.inited {
-		t.Fatal("backend should not be inited")
-	}
-
-	// mount an openable backend
-	c, _, _ := TestCoreUnsealed(t)
 	c.logicalBackends["noop"] = func(ctx context.Context, config *logical.BackendConfig) (logical.Backend, error) {
 		return b, nil
 	}
@@ -784,9 +770,38 @@ func TestInitializeBackend(t *testing.T) {
 	for _, f := range c.postUnsealFuncs {
 		f()
 	}
-	// sleep briefly so the postUnseal async call to Initialize() call can finish
-	time.Sleep(time.Second)
 
+	// sleep briefly so the async call to Initialize() call can finish
+	time.Sleep(time.Second)
+	if !b.inited {
+		t.Fatal("backend should be inited")
+	}
+}
+
+func TestCore_Mount_Initialize(t *testing.T) {
+
+	c, _, _ := TestCoreUnsealed(t)
+
+	b := &initableBackend{}
+	c.logicalBackends["noop"] = func(ctx context.Context, config *logical.BackendConfig) (logical.Backend, error) {
+		return b, nil
+	}
+	me := &MountEntry{
+		Table:       mountTableType,
+		Path:        "foo",
+		Type:        "noop",
+		NamespaceID: namespace.RootNamespaceID,
+		namespace:   namespace.RootNamespace,
+		UUID:        "abcd",
+		Accessor:    "noop-abcd",
+	}
+	err := c.mount(namespace.RootContext(nil), me)
+	if err != nil {
+		t.Fatalf("err: %v", err)
+	}
+
+	// sleep briefly so the async call to Initialize() call can finish
+	time.Sleep(time.Second)
 	if !b.inited {
 		t.Fatal("backend should be inited")
 	}

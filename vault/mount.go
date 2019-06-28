@@ -514,6 +514,15 @@ func (c *Core) mountInternal(ctx context.Context, entry *MountEntry, updateStora
 	if c.logger.IsInfo() {
 		c.logger.Info("successful mount", "namespace", entry.Namespace().Path, "path", entry.Path, "type", entry.Type)
 	}
+
+	// asynchronously call the backend's Initialize() function
+	go func() {
+		err := backend.Initialize(ctx, nil)
+		if err != nil {
+			c.logger.Error("failed to open entry", "path", entry.Path, "error", err)
+		}
+	}()
+
 	return nil
 }
 
