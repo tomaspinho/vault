@@ -6,10 +6,9 @@ import (
 	"testing"
 
 	"github.com/hashicorp/vault/sdk/framework"
-	"github.com/hashicorp/vault/sdk/logical"
 )
 
-func TestParserCreateExplicitAndDefaults(t *testing.T) {
+func TestCreateUpdateCreateExplicitAndDefaults(t *testing.T) {
 	fd := &framework.FieldData{
 		Schema: testSchema,
 	}
@@ -18,7 +17,7 @@ func TestParserCreateExplicitAndDefaults(t *testing.T) {
 		fd.Raw = make(map[string]interface{})
 		fd.Raw[name] = example[schema.Type]
 
-		result, err := Parse(nil, logical.CreateOperation, fd)
+		result, err := CreateUpdate(nil, fd)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -32,7 +31,7 @@ func TestParserCreateExplicitAndDefaults(t *testing.T) {
 				Schema: testSchema,
 				Raw:    make(map[string]interface{}),
 			}
-			result, err = Parse(nil, logical.CreateOperation, fd)
+			result, err = CreateUpdate(nil, fd)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -52,7 +51,7 @@ func TestParseUpdate(t *testing.T) {
 		Schema: testSchema,
 		Raw:    raw,
 	}
-	resultFromCreation, err := Parse(nil, logical.CreateOperation, fd)
+	resultFromCreation, err := CreateUpdate(nil, fd)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -60,7 +59,7 @@ func TestParseUpdate(t *testing.T) {
 		t.Fatal("expected shouting")
 	}
 	fd.Raw["int"] = 1
-	resultFromUpdate, err := Parse(resultFromCreation, logical.UpdateOperation, fd)
+	resultFromUpdate, err := CreateUpdate(resultFromCreation, fd)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -74,7 +73,7 @@ func TestParseUpdate(t *testing.T) {
 		t.Fatal("expected true")
 	}
 	fd.Raw["bool"] = false
-	resultFromUpdate, err = Parse(resultFromCreation, logical.UpdateOperation, fd)
+	resultFromUpdate, err = CreateUpdate(resultFromCreation, fd)
 	if err != nil {
 		t.Fatal(err)
 	}
